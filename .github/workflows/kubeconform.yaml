@@ -25,7 +25,7 @@ jobs:
           echo -e "--------- CONSOLIDATED MANIFEST ---------- \n$(cat stage_consolidated_manifest.yaml)"
           polaris audit --audit-path ./stage_consolidated_manifest.yaml --format=pretty
           kustomize build apps/my-web-app/overlays/environments/stage | kubeconform -verbose
-          polaris audit --audit-path ./prod_consolidated_manifest.yaml --format=pretty --config "apps/my-web-app/validation/custom/polaris/custom-check.yaml"
+          polaris audit --audit-path ./stage_consolidated_manifest.yaml --format=pretty --config "apps/my-web-app/validation/custom/polaris/custom-check.yaml"
       - run: |
           echo "******************** Validating Prod Manifests ***********************"
           kustomize build apps/my-web-app/overlays/environments/prod -o prod_consolidated_manifest.yaml
