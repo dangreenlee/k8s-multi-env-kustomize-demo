@@ -9,6 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: fairwindsops/polaris/.github/actions/setup-polaris@master
+        with:
+          version: 5.0.0
       - uses: yokawasa/action-setup-kube-tools@v0.9.2
         with:
           setup-tools: |
@@ -17,5 +20,16 @@ jobs:
           kubeconform: '0.5.0'
           kustomize: '4.5.7'
       - run: |
+          echo "******************** Validating Staging Manifests ***********************"
+          kustomize build apps/my-web-app/overlays/environments/stage -o stage_consolidated_manifest.yaml
+          echo -e "--------- CONSOLIDATED MANIFEST ---------- \n$(cat stage_consolidated_manifest.yaml)"
+          polaris audit --audit-path ./stage_consolidated_manifest.yaml --format=pretty
           kustomize build apps/my-web-app/overlays/environments/stage | kubeconform -verbose
+          polaris audit --audit-path ./prod_consolidated_manifest.yaml --format=pretty --config ".\custom-check.yaml"
+      - run: |
+          echo "******************** Validating Prod Manifests ***********************"
+          kustomize build apps/my-web-app/overlays/environments/prod -o prod_consolidated_manifest.yaml
+          echo -e "--------- CONSOLIDATED MANIFEST ---------- \n$(cat prod_consolidated_manifest.yaml)"
+          polaris audit --audit-path ./prod_consolidated_manifest.yaml --format=pretty
           kustomize build apps/my-web-app/overlays/environments/prod | kubeconform -verbose
+          
