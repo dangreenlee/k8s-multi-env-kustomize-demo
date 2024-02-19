@@ -1,4 +1,4 @@
-choname: Validate Kubernetes Manifests
+name: Validate Kubernetes Manifests
 
 on:
   pull_request:
