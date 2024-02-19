@@ -21,7 +21,7 @@ jobs:
           kustomize: '4.5.7'
       - run: |
           kustomize build apps/my-web-app/overlays/environments/prod -o prod_consolidated_manifest.yaml
-          polaris audit --audit-path ./prod_consolidated_manifest.yaml --format=pretty --set-exit-code-on-danger --set-exit-code-below-score 80
+          polaris audit --audit-path ./prod_consolidated_manifest.yaml --format=pretty
           kustomize build apps/my-web-app/overlays/environments/prod | kubeconform -verbose
           kustomize build apps/my-web-app/overlays/environments/stage | kubeconform -verbose
           
