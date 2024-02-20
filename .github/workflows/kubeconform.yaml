@@ -23,14 +23,14 @@ jobs:
           echo "******************** Validating Staging Manifests ***********************"
           kustomize build apps/my-web-app/overlays/environments/stage -o stage_consolidated_manifest.yaml
           echo -e "--------- CONSOLIDATED MANIFEST ---------- \n$(cat stage_consolidated_manifest.yaml)"
-          polaris audit --audit-path ./stage_consolidated_manifest.yaml --format=pretty
+          polaris audit --audit-path ./stage_consolidated_manifest.yaml --format=pretty --set-exit-code-on-danger --set-exit-code-below-score 80
           kustomize build apps/my-web-app/overlays/environments/stage | kubeconform -verbose
-          polaris audit --audit-path ./stage_consolidated_manifest.yaml --format=pretty --config "apps/my-web-app/validation/custom/polaris/custom-check.yaml"
+          polaris audit --audit-path ./stage_consolidated_manifest.yaml --format=pretty --set-exit-code-on-danger --set-exit-code-below-score 80 --config "apps/my-web-app/validation/custom/polaris/custom-check.yaml"
       - run: |
           echo "******************** Validating Prod Manifests ***********************"
           kustomize build apps/my-web-app/overlays/environments/prod -o prod_consolidated_manifest.yaml
           echo -e "--------- CONSOLIDATED MANIFEST ---------- \n$(cat prod_consolidated_manifest.yaml)"
-          polaris audit --audit-path ./prod_consolidated_manifest.yaml --format=pretty
+          polaris audit --audit-path ./prod_consolidated_manifest.yaml --format=pretty --set-exit-code-on-danger --set-exit-code-below-score 80
           kustomize build apps/my-web-app/overlays/environments/prod | kubeconform -verbose
-          polaris audit --audit-path ./prod_consolidated_manifest.yaml --format=pretty --config "apps/my-web-app/validation/custom/polaris/custom-check.yaml"
+          polaris audit --audit-path ./prod_consolidated_manifest.yaml --format=pretty --set-exit-code-on-danger --set-exit-code-below-score 80 --config "apps/my-web-app/validation/custom/polaris/custom-check.yaml"
           
