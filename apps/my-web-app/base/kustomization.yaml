@@ -1,6 +1,38 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-
+commonLabels:
+  app.kubernetes.io/managed-by: argocd
+  org: Smarsh
 resources:
-  - deployment.yaml
-  - service.yaml
+- deployment.yaml
+- service.yaml
+- serviceaccount.yaml
+configMapGenerator:
+- name: kymc-base-config
+  literals:
+  - kms-service-name=aws-kms-service
+  - db-service-name=crypt-db
+  - SPRING_APPLICATION_NAME=kymc
+  - SPRING_PROFILES_ACTIVE=cloud,k8
+  - monitoring.tags.segment=enterprise
+  - monitoring.tags.product=cloud-capture
+  - monitoring.tags.product_family=capture
+  - monitoring.tags.service=kymc
+  - monitoring.tags.feature=capture
+  - monitoring.tags.customer=multicustomer
+  - monitoring.tags.component=application
+  - monitoring.tags.foundation=aws-us_west_2
+  - monitoring.tags.cloud_region=us-west-2
+  - monitoring.tags.service_region=oregon
+  - monitoring.tags.entity=multicustomer-oregon
+  - monitoring.tags.platform=k8s
+  - management.metrics.export.datadog.enabled=false
+  - OTEL_INSTRUMENTATION_RABBITMQ_ENABLED=false
+  - OTEL_INSTRUMENTATION_GRPC_ENABLED=false
+  - OTEL_INSTRUMENTATION_TOMCAT_ENABLED=false
+  - OTEL_INSTRUMENTATION_AWS_SDK_ENABLED=false
+  - OTEL_INSTRUMENTATION_MONGO_ENABLED=false
+  - OTEL_INSTRUMENTATION_EXTERNAL_ANNOTATIONS_ENABLED=false
+  - RMQ_FROM_VCAP=1
+  - logging.level.com.smarsh.core.services.messagequeueing.impl.service.endpoint.RabbitMQJmsTemplateQueueEndpoint=FATAL
+  - logging.level.com.smarsh.core.services.messagequeueing.impl.service.pool.TransactionalCallbackPool=FATAL

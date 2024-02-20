@@ -1,0 +1,23 @@
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: aws-kms-service
+  namespace: cc-smarsh-dev
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+spec:
+  type: kv-v2
+
+  # mount path
+  mount: concourse
+
+  # path of the secret
+  path: cloud-capture/cc-dev/aws-kms-service
+
+  # dest k8s secret
+  destination:
+    name: aws-kms-service
+    create: true
+
+  # static secret refresh interval
+  refreshAfter: 30s
