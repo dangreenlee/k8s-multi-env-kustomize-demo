@@ -23,7 +23,7 @@ jobs:
           kustomize build apps/my-web-app/overlays/aws-us-west-2-cc-smarsh-dev -o dev_consolidated_manifest.yaml
           echo -e "--------- CONSOLIDATED MANIFEST ---------- \n$(cat dev_consolidated_manifest.yaml)"
           # conftest test --update github.com/instrumenta/policies.git//kubernetes dev_consolidated_manifest.yaml
-          kustomize build apps/my-web-app/overlays/aws-us-west-2-cc-smarsh-dev | kubeconform -verbose | conftest test -
+          kustomize build apps/my-web-app/overlays/aws-us-west-2-cc-smarsh-dev | kubeconform -verbose | conftest test
       - run: |
           echo "******************** Validating Test Manifests ***********************"
           kustomize build apps/my-web-app/overlays/aws-us-west-2-cc-smarsh-test -o test_consolidated_manifest.yaml
