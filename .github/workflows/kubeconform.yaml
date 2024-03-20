@@ -9,13 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Get changed objects
-        uses: b4b4r07/action-changed-objects@master
-        with:
-          added: 'true'
-          deleted: 'false'
-          modified: 'true'
-        id: objects
       - name: Conftest test against changed files
         uses: instrumenta/conftest-action@master
       - uses: yokawasa/action-setup-kube-tools@v0.9.2
