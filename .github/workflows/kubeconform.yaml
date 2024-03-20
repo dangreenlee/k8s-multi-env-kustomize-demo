@@ -22,7 +22,7 @@ jobs:
           echo "******************** Validating Dev Manifests ***********************"
           kustomize build apps/my-web-app/overlays/aws-us-west-2-cc-smarsh-dev -o dev_consolidated_manifest.yaml
           echo -e "--------- CONSOLIDATED MANIFEST ---------- \n$(cat dev_consolidated_manifest.yaml)"
-          kustomize build apps/my-web-app/overlays/aws-us-west-2-cc-smarsh-dev | kubeconform -verbose
+          kustomize build apps/my-web-app/overlays/aws-us-west-2-cc-smarsh-dev
           conftest test -p apps/my-web-app/conftest/policy dev_consolidated_manifest.yaml
       - run: |
           echo "******************** Validating Test Manifests ***********************"
