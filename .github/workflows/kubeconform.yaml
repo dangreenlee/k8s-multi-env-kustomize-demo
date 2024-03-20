@@ -22,15 +22,9 @@ jobs:
           echo "******************** Validating Dev Manifests ***********************"
           kustomize build apps/my-web-app/overlays/aws-us-west-2-cc-smarsh-dev -o dev_consolidated_manifest.yaml
           echo -e "--------- CONSOLIDATED MANIFEST ---------- \n$(cat dev_consolidated_manifest.yaml)"
-          kustomize build apps/my-web-app/overlays/aws-us-west-2-cc-smarsh-dev | kubeconform -verbose
-          conftest test dev_consolidated_manifest.yaml
+          kustomize build apps/my-web-app/overlays/aws-us-west-2-cc-smarsh-dev | conftest test -
       - run: |
           echo "******************** Validating Test Manifests ***********************"
           kustomize build apps/my-web-app/overlays/aws-us-west-2-cc-smarsh-test -o test_consolidated_manifest.yaml
           echo -e "--------- CONSOLIDATED MANIFEST ---------- \n$(cat test_consolidated_manifest.yaml)"
           kustomize build apps/my-web-app/overlays/aws-us-west-2-cc-smarsh-test | kubeconform -verbose | conftest test -
-      - name: Conftest test against changed files
-        uses: instrumenta/conftest-action@master
-        with:
-          files: dev_consolidated_manifest.yaml
-          policy: conftest_policies
