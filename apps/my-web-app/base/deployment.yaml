@@ -14,7 +14,9 @@ spec:
         app.kubernetes.io/instance: kymc
     spec:
       serviceAccountName: kymc
-      securityContext: {}
+      securityContext: {
+        runAsNonRoot: true
+      }
       containers:
         - name: kymc
           image: "kymc:6.01.0677"
