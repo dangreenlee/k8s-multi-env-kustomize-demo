@@ -1,0 +1,33 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+commonLabels:
+  tenancy.smarsh.com/cloud-provider: aws
+  tenancy.smarsh.com/region: us-west-2
+  tenancy.smarsh.com/service_region: nam
+  tenancy.smarsh.com/customer: smarsh
+  tenancy.smarsh.com/tier: dev
+  tenancy.smarsh.com/namespace: cc-smarsh-dev
+  tenancy.smarsh.com/product_family: capture
+  tenancy.smarsh.com/product: cloud_capture
+  tenancy.smarsh.com/deployment-identifier: aws-us-west-2-cc-smarsh-dev
+resources:
+- crypt-db.yaml
+- aws-kms-service.yaml
+- ../../base
+- hpa.yaml
+- virtualservice.yaml
+patches:
+- path: deployment.yaml
+images:
+- name: "kymc"
+  newName: 593597821733.dkr.ecr.us-west-2.amazonaws.com/cc/kymc
+  newTag: 6.01.0699
+namespace: cc-smarsh-dev
+configMapGenerator:
+- name: kymc-overlays-config
+  literals:
+  - monitoring.tags.namespace=cc-smarsh-dev
+  - monitoring.tags.tier=dev
+  - monitoring.tags.cloud_provider=aws
+  - monitoring.tags.environment=multicustomer-oregon-cloud-capture-dev
+  - management.metrics.export.datadog.api-key=datadog_api_key

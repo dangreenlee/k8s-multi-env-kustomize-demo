@@ -1,9 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: my-web-app-service
+  name: kymc
 spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: kymc
+    app.kubernetes.io/instance: kymc
   ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
+    - port: 80
+      targetPort: 8080

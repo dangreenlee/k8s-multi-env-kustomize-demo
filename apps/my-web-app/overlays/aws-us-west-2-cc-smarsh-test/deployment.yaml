@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kymc
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kymc
+      app.kubernetes.io/instance: kymc
+  template:
+    spec:
+      containers:
+        - name: kymc
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 2G
+            requests:
+              cpu: 1000m
+              memory: 2G

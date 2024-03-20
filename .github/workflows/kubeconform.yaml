@@ -9,13 +9,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: yokawasa/action-setup-kube-tools@v0.9.2
+      - uses: yokawasa/action-setup-kube-tools@v0.11.0
         with:
           setup-tools: |
             kubeconform
             kustomize
+            conftest
           kubeconform: '0.5.0'
           kustomize: '4.5.7'
+          conftest: '0.50.0'
       - run: |
-          kustomize build apps/my-web-app/overlays/environments/stage | kubeconform -verbose
-          kustomize build apps/my-web-app/overlays/environments/prod | kubeconform -verbose
+          echo "******************** Validating Dev Manifests ***********************"
+          kustomize build apps/my-web-app/overlays/aws-us-west-2-cc-smarsh-dev -o dev_consolidated_manifest.yaml
+          echo -e "--------- CONSOLIDATED MANIFEST ---------- \n$(cat dev_consolidated_manifest.yaml)"
+          kustomize build apps/my-web-app/overlays/aws-us-west-2-cc-smarsh-dev
+          conftest test -p apps/my-web-app/conftest/policy dev_consolidated_manifest.yaml
+      - run: |
+          echo "******************** Validating Test Manifests ***********************"
+          kustomize build apps/my-web-app/overlays/aws-us-west-2-cc-smarsh-test -o test_consolidated_manifest.yaml
+          echo -e "--------- CONSOLIDATED MANIFEST ---------- \n$(cat test_consolidated_manifest.yaml)"
+          kustomize build apps/my-web-app/overlays/aws-us-west-2-cc-smarsh-test | kubeconform -verbose

@@ -1,0 +1,23 @@
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultStaticSecret
+metadata:
+  name: crypt-db
+  namespace: cc-smarsh-dev
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+spec:
+  type: kv-v2
+
+  # mount path
+  mount: concourse
+
+  # path of the secret
+  path: cloud-capture/cc-dev/crypt-db
+
+  # dest k8s secret
+  destination:
+    name: crypt-db
+    create: true
+
+  # static secret refresh interval
+  refreshAfter: 30s

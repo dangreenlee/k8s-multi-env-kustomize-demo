@@ -1,0 +1,17 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: cc-route-kymc-dev
+  namespace: cc-smarsh-dev
+spec:
+  hosts:
+    - "kymc.cc-dev.internal.smarsh.us-west-2.aws.smarsh.cloud"
+  gateways:
+    - istio-ingress/apps-https-tcp-gw-ep-mt-smarsh-cc-dev
+  http:
+    - route:
+        - destination:
+            host: kymc
+      match:
+      - uri:
+          prefix: "/"    
