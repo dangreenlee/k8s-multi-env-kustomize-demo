@@ -9,8 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Conftest test against changed files
-        uses: instrumenta/conftest-action@master
       - uses: yokawasa/action-setup-kube-tools@v0.9.2
         with:
           setup-tools: |
@@ -22,11 +20,15 @@ jobs:
           echo "******************** Validating Dev Manifests ***********************"
           kustomize build apps/my-web-app/overlays/aws-us-west-2-cc-smarsh-dev -o dev_consolidated_manifest.yaml
           echo -e "--------- CONSOLIDATED MANIFEST ---------- \n$(cat dev_consolidated_manifest.yaml)"
-          conftest test --update github.com/instrumenta/policies.git//kubernetes dev_consolidated_manifest.yaml
+          # conftest test --update github.com/instrumenta/policies.git//kubernetes dev_consolidated_manifest.yaml
           kustomize build apps/my-web-app/overlays/aws-us-west-2-cc-smarsh-dev | kubeconform -verbose
       - run: |
           echo "******************** Validating Test Manifests ***********************"
           kustomize build apps/my-web-app/overlays/aws-us-west-2-cc-smarsh-test -o test_consolidated_manifest.yaml
           echo -e "--------- CONSOLIDATED MANIFEST ---------- \n$(cat test_consolidated_manifest.yaml)"
           kustomize build apps/my-web-app/overlays/aws-us-west-2-cc-smarsh-test | kubeconform -verbose
-          
+      - name: Conftest test against changed files
+        uses: instrumenta/conftest-action@master
+        with:
+          files: dev_consolidated_manifest.yaml
+          policy: conftest_policies
