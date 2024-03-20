@@ -9,9 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: fairwindsops/polaris/.github/actions/setup-polaris@master
-        with:
-          version: 5.0.0
       - name: Get changed objects
         uses: b4b4r07/action-changed-objects@master
         with:
@@ -19,25 +16,8 @@ jobs:
           deleted: 'false'
           modified: 'true'
         id: objects
-      - name: Run conftest test against changed files
-        uses: b4b4r07/action-conftest@master
-        if: steps.objects.outputs.changed
-        with:
-          files: ${{ steps.objects.outputs.changed }}
-          matches: '*.yaml'
-        id: conftest
-      - name: Post conftest command result to GitHub comment
-        uses: b4b4r07/action-github-comment@master
-        if: always() && steps.conftest.outputs.result
-        with:
-          body: |
-            ## conftest test result
-            ```
-            ${{ steps.conftest.outputs.result }}
-            ```
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          LOG: trace
+      - name: Conftest test against changed files
+        uses: instrumenta/conftest-action@master
       - uses: yokawasa/action-setup-kube-tools@v0.9.2
         with:
           setup-tools: |
@@ -49,14 +29,11 @@ jobs:
           echo "******************** Validating Dev Manifests ***********************"
           kustomize build apps/my-web-app/overlays/aws-us-west-2-cc-smarsh-dev -o dev_consolidated_manifest.yaml
           echo -e "--------- CONSOLIDATED MANIFEST ---------- \n$(cat dev_consolidated_manifest.yaml)"
-          polaris audit --audit-path ./dev_consolidated_manifest.yaml --format=pretty --only-show-failed-tests true --set-exit-code-on-danger --set-exit-code-below-score 80
+          conftest test --update github.com/instrumenta/policies.git//kubernetes dev_consolidated_manifest.yaml
           kustomize build apps/my-web-app/overlays/aws-us-west-2-cc-smarsh-dev | kubeconform -verbose
-          polaris audit --audit-path ./dev_consolidated_manifest.yaml --format=pretty --only-show-failed-tests true --set-exit-code-on-danger --set-exit-code-below-score 80 --config "apps/my-web-app/validation/custom/polaris/custom-check.yaml"
       - run: |
           echo "******************** Validating Test Manifests ***********************"
           kustomize build apps/my-web-app/overlays/aws-us-west-2-cc-smarsh-test -o test_consolidated_manifest.yaml
           echo -e "--------- CONSOLIDATED MANIFEST ---------- \n$(cat test_consolidated_manifest.yaml)"
-          polaris audit --audit-path ./test_consolidated_manifest.yaml --format=pretty --only-show-failed-tests true --set-exit-code-on-danger --set-exit-code-below-score 80
           kustomize build apps/my-web-app/overlays/aws-us-west-2-cc-smarsh-test | kubeconform -verbose
-          polaris audit --audit-path ./test_consolidated_manifest.yaml --format=pretty --only-show-failed-tests true --set-exit-code-on-danger --set-exit-code-below-score 80 --config "apps/my-web-app/validation/custom/polaris/custom-check.yaml"
           
